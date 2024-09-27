@@ -1,4 +1,4 @@
-/* MIT License - Copyright (c) 2019-2022 Francis Van Roie
+/* MIT License - Copyright (c) 2019-2024 Francis Van Roie
    For full license information read the LICENSE file in the project folder */
 
 /* ********************************************************************************************
@@ -376,6 +376,17 @@ void hasp_new_object(const JsonObject& config, uint8_t& saved_page_id)
                     obj->user_data.objid = LV_HASP_IMAGE;
                 }
                 break;
+
+#if HASP_USE_QRCODE > 0
+            case LV_HASP_QRCODE:
+            case HASP_OBJ_QRCODE:
+                obj = lv_qrcode_create(parent_obj, 140, LV_COLOR_BLACK, LV_COLOR_WHITE);
+                if(obj) {
+                    lv_obj_set_event_cb(obj, delete_event_handler);
+                    obj->user_data.objid = LV_HASP_QRCODE;
+                }
+                break;
+#endif
 
             case LV_HASP_ARC:
             case HASP_OBJ_ARC:

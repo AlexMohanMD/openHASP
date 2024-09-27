@@ -1,9 +1,7 @@
-/* MIT License - Copyright (c) 2019-2022 Francis Van Roie
+/* MIT License - Copyright (c) 2019-2024 Francis Van Roie
    For full license information read the LICENSE file in the project folder */
 
 /* Multi threaded asynchronous paho client */
-
-#include <stdint.h>
 
 #include "hasp_conf.h"
 
@@ -47,7 +45,7 @@ const char FP_CONFIG_GROUP[] PROGMEM = "group";
 #include "hasp_mqtt.h" // functions to implement here
 
 #include "hasp/hasp_dispatch.h" // for dispatch_topic_payload
-#include "hasp_debug.h" // for logging
+#include "hasp_debug.h"         // for logging
 
 #if !defined(_WIN32)
 #include <unistd.h>
@@ -286,11 +284,11 @@ bool mqttIsConnected()
     return mqttConnected; // MQTTAsync_isConnected(mqtt_client); // <- deadlocking on Linux
 }
 
-int mqtt_send_state(const __FlashStringHelper* subtopic, const char* payload)
+int mqtt_send_state(const __FlashStringHelper* subtopic, const char* payload, bool retain)
 {
     char tmp_topic[mqttNodeTopic.length() + 20];
     snprintf_P(tmp_topic, sizeof(tmp_topic), ("%s" MQTT_TOPIC_STATE "/%s"), mqttNodeTopic.c_str(), subtopic);
-    return mqttPublish(tmp_topic, payload, strlen(payload), false);
+    return mqttPublish(tmp_topic, payload, strlen(payload), retain);
 }
 
 int mqtt_send_discovery(const char* payload, size_t len)
@@ -438,7 +436,10 @@ void mqttSetup()
     mqttLwtTopic += MQTT_TOPIC_LWT;
 }
 
-IRAM_ATTR void mqttLoop(){};
+IRAM_ATTR void mqttLoop() {};
+
+void mqttEverySecond()
+{}
 
 void mqttEvery5Seconds(bool wifiIsConnected)
 {

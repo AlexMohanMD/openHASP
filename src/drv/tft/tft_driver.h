@@ -1,4 +1,4 @@
-/* MIT License - Copyright (c) 2019-2022 Francis Van Roie
+/* MIT License - Copyright (c) 2019-2024 Francis Van Roie
    For full license information read the LICENSE file in the project folder */
 
 #ifndef HASP_BASE_TFT_DRIVER_H
@@ -32,6 +32,7 @@ enum lv_hasp_obj_type_t {
     TFT_PANEL_RM68140,
     TFT_PANEL_RGB,
     TFT_PANEL_EPD,
+    TFT_PANEL_GC9A01,
     TFT_PANEL_LAST,
 };
 

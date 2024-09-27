@@ -1,8 +1,12 @@
-/* MIT License - Copyright (c) 2019-2022 Francis Van Roie
+/* MIT License - Copyright (c) 2019-2024 Francis Van Roie
    For full license information read the LICENSE file in the project folder */
 
 #ifndef HASP_CONF_H
 #define HASP_CONF_H
+
+#if HASP_TARGET_ARDUINO
+#include "Arduino.h"
+#endif
 
 #ifdef USE_CONFIG_OVERRIDE
 #include "user_config_override.h"
@@ -63,7 +67,7 @@
 #endif
 
 #ifndef HASP_USE_HTTP_UPDATE
-#define HASP_USE_HTTP_UPDATE (HASP_HAS_NETWORK)
+#define HASP_USE_HTTP_UPDATE (HASP_HAS_NETWORK) // Adds 10kB
 #endif
 
 #ifndef HASP_USE_MQTT
@@ -75,7 +79,7 @@
 #endif
 
 #ifndef HASP_USE_WIREGUARD
-#define HASP_USE_WIREGUARD (HASP_HAS_NETWORK)
+#define HASP_USE_WIREGUARD 0
 #endif
 
 #ifndef HASP_USE_BROADCAST
@@ -207,11 +211,11 @@
 #define IRAM_ATTR
 #endif
 
-#ifndef FPSTR
+#if !defined(FPSTR)
 #define FPSTR(pstr_pointer) (reinterpret_cast<const __FlashStringHelper*>(pstr_pointer))
 #endif
 
-#ifndef PGM_P
+#if !defined(PGM_P)
 #define PGM_P const char*
 #endif
 

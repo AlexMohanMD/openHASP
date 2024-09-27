@@ -1,4 +1,4 @@
-/* MIT License - Copyright (c) 2019-2022 Francis Van Roie
+/* MIT License - Copyright (c) 2019-2024 Francis Van Roie
    For full license information read the LICENSE file in the project folder */
 
 /* ********************************************************************************************
@@ -85,6 +85,12 @@ void delete_event_handler(lv_obj_t* obj, lv_event_t event)
         case LV_HASP_IMAGE:
             my_image_release_resources(obj);
             break;
+
+#if HASP_USE_QRCODE > 0
+        case LV_HASP_QRCODE:
+            lv_qrcode_delete(obj);
+            break;
+#endif
 
         case LV_HASP_GAUGE:
             break;
@@ -287,14 +293,20 @@ static void event_object_selection_changed(lv_obj_t* obj, uint8_t eventid, int16
 {
     char data[512];
     {
+        StaticJsonDocument<256> doc;
+        size_t len = text ? strlen(text) : 0;
+        doc.set(text); // use text as-is
+        char serialized_text[256];
+        len = serializeJson(doc, serialized_text, sizeof(serialized_text));
+
         char eventname[8];
         Parser::get_event_name(eventid, eventname, sizeof(eventname));
-
         if(const char* tag = my_obj_get_tag(obj))
-            snprintf_P(data, sizeof(data), PSTR("{\"event\":\"%s\",\"val\":%d,\"text\":\"%s\",\"tag\":%s}"), eventname,
-                       val, text, tag);
+            snprintf_P(data, sizeof(data), PSTR("{\"event\":\"%s\",\"val\":%d,\"text\":%s,\"tag\":%s}"), eventname,
+                       val, serialized_text, tag);
         else
-            snprintf_P(data, sizeof(data), PSTR("{\"event\":\"%s\",\"val\":%d,\"text\":\"%s\"}"), eventname, val, text);
+            snprintf_P(data, sizeof(data), PSTR("{\"event\":\"%s\",\"val\":%d,\"text\":%s}"), eventname, val,
+                       serialized_text);
     }
     event_send_object_data(obj, data);
 }
@@ -435,7 +447,6 @@ void textarea_event_handler(lv_obj_t* obj, lv_event_t event)
         {
             char eventname[8];
             Parser::get_event_name(hasp_event_id, eventname, sizeof(eventname));
-
             if(const char* tag = my_obj_get_tag(obj))
                 snprintf_P(data, sizeof(data), PSTR("{\"event\":\"%s\",\"text\":\"%s\",\"tag\":%s}"), eventname,
                            lv_textarea_get_text(obj), tag);
@@ -527,7 +538,6 @@ void generic_event_handler(lv_obj_t* obj, lv_event_t event)
         {
             char eventname[8];
             Parser::get_event_name(last_value_sent, eventname, sizeof(eventname));
-
             if(const char* tag = my_obj_get_tag(obj))
                 snprintf_P(data, sizeof(data), PSTR("{\"event\":\"%s\",\"tag\":%s}"), eventname, tag);
             else

@@ -1,4 +1,4 @@
-/* MIT License - Copyright (c) 2019-2022 Francis Van Roie
+/* MIT License - Copyright (c) 2019-2024 Francis Van Roie
    For full license information read the LICENSE file in the project folder */
 
 #include "hasplib.h"
@@ -606,6 +606,30 @@ static inline void my_btn_set_text(lv_obj_t* obj, const char* value)
         my_label_set_text(label, value);
     }
 }
+
+// OK - lvgl does not return a const char *
+#if HASP_USE_QRCODE > 0
+static const char* my_qrcode_get_text(const lv_obj_t* obj)
+{
+    if(!obj) {
+        LOG_WARNING(TAG_ATTR, F("QR-code not defined"));
+        return NULL;
+    }
+
+    if(obj) {
+        if(obj_check_type(obj, LV_HASP_QRCODE)) return lv_qrcode_get_text(obj);
+    } else {
+        LOG_WARNING(TAG_ATTR, F("my_qrcode_get_text NULL Pointer encountered"));
+    }
+
+    return NULL;
+}
+
+static void my_qrcode_set_text(lv_obj_t* obj, const char* text)
+{
+    lv_qrcode_set_text(obj, text);
+}
+#endif
 
 /**
  * Get the value_str for an object part and state.
